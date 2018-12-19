@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         mMapView.setMap(mGISMap);
 
         //set max and minscale for users to get through clicking buttons
-        final double maxscale = 10000001;
+        final double maxscale = 1000;
         final double minscale = 3.777303373333333E8;
         System.out.println("maxscale is:"+maxscale + "and minscale is : "+minscale);
 
