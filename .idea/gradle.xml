@@ -10,6 +10,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/featurelayer_offlinegeodatabase" />
             <option value="$PROJECT_DIR$/mapviewzoom" />
+            <option value="$PROJECT_DIR$/mapviewzoomwithslider" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

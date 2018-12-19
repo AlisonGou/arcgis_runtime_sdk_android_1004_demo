@@ -1,1 +1,1 @@
-include ':featurelayer_offlinegeodatabase', ':mapviewzoom'
+include ':featurelayer_offlinegeodatabase', ':mapviewzoom', ':mapviewzoomwithslider'
