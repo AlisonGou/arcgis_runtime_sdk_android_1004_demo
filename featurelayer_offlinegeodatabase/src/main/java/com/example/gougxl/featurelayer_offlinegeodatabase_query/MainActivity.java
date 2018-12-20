@@ -18,6 +18,11 @@ import com.esri.arcgisruntime.data.FeatureQueryResult;
 import com.esri.arcgisruntime.data.Geodatabase;
 import com.esri.arcgisruntime.data.GeodatabaseFeatureTable;
 import com.esri.arcgisruntime.data.QueryParameters;
+import com.esri.arcgisruntime.data.StatisticDefinition;
+import com.esri.arcgisruntime.data.StatisticRecord;
+import com.esri.arcgisruntime.data.StatisticType;
+import com.esri.arcgisruntime.data.StatisticsQueryParameters;
+import com.esri.arcgisruntime.data.StatisticsQueryResult;
 import com.esri.arcgisruntime.layers.FeatureLayer;
 import com.esri.arcgisruntime.loadable.LoadStatus;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
@@ -28,7 +33,9 @@ import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.symbology.SimpleFillSymbol;
 import com.esri.arcgisruntime.symbology.SimpleRenderer;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -87,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
                                 mMapView.setViewpointAsync(new Viewpoint(featureLayer.getFullExtent()));
                                 QueryParameters queryParameters  = new QueryParameters();
                                 featurelayerquery(featureLayer,queryParameters, FeatureLayer.SelectionMode.ADD);
+                                statisticbypolygon(featureLayer);
                             }else{
                                 Log.e(TAG, "Feature Layer failed to load!");
                             }
@@ -116,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
                         Feature feature = iterator.next();
                         Map<String,Object> map =feature.getAttributes();
 
-                        System.out.println("要素属性（feature attribute）："+map);
+                        //System.out.println("要素属性（feature attribute）："+map);
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -130,6 +138,59 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    }
+
+    public void statisticbypolygon(FeatureLayer featureLayer){
+
+        List statisticDefinitions = new ArrayList();
+        //if the sum of some certain field is needed later, then statistic method of sum has to be used by OBJECTID
+
+        StatisticDefinition statDefCount = new StatisticDefinition("OBJECTID", StatisticType.SUM,"objectcount");
+        statisticDefinitions.add(statDefCount);
+        StatisticDefinition mj = new StatisticDefinition("PERIMETER", StatisticType.SUM,"premetersum");
+        statisticDefinitions.add(mj);
+
+        StatisticsQueryParameters statisticsQueryParameters = new StatisticsQueryParameters(statisticDefinitions);
+        statisticsQueryParameters.getGroupByFieldNames().add("st_area(Shape)");
+        ListenableFuture<StatisticsQueryResult> statQueryResultFuture =  featureLayer.getFeatureTable().queryStatisticsAsync(statisticsQueryParameters);
+
+        statQueryResultFuture.addDoneListener(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    StatisticsQueryResult statisticsQueryResult =statQueryResultFuture.get();
+                    Iterator result=  statisticsQueryResult.iterator();
+
+                    while (result.hasNext()){
+                        StatisticRecord statisticRecord= (StatisticRecord) result.next();
+                        if (statisticRecord == null) {
+                            break;
+                        }
+                        Map<String, Object> resultmap= statisticRecord.getStatistics();
+                        //System.out.println("result map is:"+resultmap);
+                        if (resultmap.containsKey("premetersum")){
+                            double d = (double) resultmap.get("premetersum");
+//                            double objectid = (double)resultmap.get("objectcount");
+                            //System.out.println("PERIMETER sum ："+d +"objectid :" +objectid);
+                            System.out.println("PERIMETER sum ："+d);
+                        }else {
+                            System.out.println("PERIMETER sum is not returned" );
+                        }
+
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    e.getMessage();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                    e.getCause();
+                }
+
+
+
+
+            }
+        });
     }
     /**
      * Handle the permissions request response
