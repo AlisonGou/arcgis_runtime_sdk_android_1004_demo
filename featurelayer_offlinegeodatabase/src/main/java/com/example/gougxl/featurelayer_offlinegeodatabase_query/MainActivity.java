@@ -147,11 +147,12 @@ public class MainActivity extends AppCompatActivity {
 
         StatisticDefinition statDefCount = new StatisticDefinition("OBJECTID", StatisticType.SUM,"objectcount");
         statisticDefinitions.add(statDefCount);
-        StatisticDefinition mj = new StatisticDefinition("PERIMETER", StatisticType.SUM,"premetersum");
-        statisticDefinitions.add(mj);
+        StatisticDefinition areasum = new StatisticDefinition("PERIMETER", StatisticType.SUM,"premetersum");
+        statisticDefinitions.add(areasum);
 
         StatisticsQueryParameters statisticsQueryParameters = new StatisticsQueryParameters(statisticDefinitions);
-        statisticsQueryParameters.getGroupByFieldNames().add("st_area(Shape)");
+        //groupby field can not be readonly field or fields in StatisticDefinition
+        //statisticsQueryParameters.getGroupByFieldNames().add("st_area(Shape)");
         ListenableFuture<StatisticsQueryResult> statQueryResultFuture =  featureLayer.getFeatureTable().queryStatisticsAsync(statisticsQueryParameters);
 
         statQueryResultFuture.addDoneListener(new Runnable() {
