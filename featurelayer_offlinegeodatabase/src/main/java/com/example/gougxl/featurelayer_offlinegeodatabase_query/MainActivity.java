@@ -25,8 +25,11 @@ import com.esri.arcgisruntime.data.StatisticsQueryParameters;
 import com.esri.arcgisruntime.data.StatisticsQueryResult;
 import com.esri.arcgisruntime.layers.FeatureLayer;
 import com.esri.arcgisruntime.loadable.LoadStatus;
+import com.esri.arcgisruntime.loadable.LoadStatusChangedEvent;
+import com.esri.arcgisruntime.loadable.LoadStatusChangedListener;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
+import com.esri.arcgisruntime.mapping.LayerList;
 import com.esri.arcgisruntime.mapping.Viewpoint;
 import com.esri.arcgisruntime.mapping.view.BackgroundGrid;
 import com.esri.arcgisruntime.mapping.view.MapView;
@@ -59,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
         backgroundGrid.setColor(Color.WHITE);
         mMapView.setBackgroundGrid(backgroundGrid);
 
+
+
         // For API level 23+ request permission at runtime
         if (ContextCompat.checkSelfPermission(MainActivity.this, reqPermission[0]) == PackageManager.PERMISSION_GRANTED) {
             loadgeodatabase();
@@ -68,10 +73,30 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(MainActivity.this, reqPermission, requestCode);
         }
 
+        mArcGISMap.addDoneLoadingListener(new Runnable() {
+            @Override
+            public void run() {
+                if(mArcGISMap.getLoadStatus()==LoadStatus.LOADED){
+                    LayerList layerList= mArcGISMap.getOperationalLayers();
+                    if(layerList.size()>0){
+                        System.out.println("layerlist size :"+layerList.size());
+                    }else{
+                        System.out.println("layerlist size is not bigger than 0");
+                    }
+                }else if(mArcGISMap.getLoadStatus()==LoadStatus.FAILED_TO_LOAD)
+                {
+                    System.out.println(mArcGISMap.getLoadError().getCause());
+
+                }
+            }
+        });
+
+
+
     }
 
     private void loadgeodatabase (){
-        String geodatabasepath = Environment.getExternalStorageDirectory()+"/Android/data/ArcGIS/wgs84_web_mecator.geodatabase";
+        String geodatabasepath = Environment.getExternalStorageDirectory()+"/Android/data/ArcGIS/data/wgs84_web_mecator.geodatabase";
         System.out.println("externalpath"+geodatabasepath);
         Geodatabase geodatabase = new Geodatabase(geodatabasepath);
 
@@ -86,15 +111,36 @@ public class MainActivity extends AppCompatActivity {
                     geodatabaseFeatureTable.loadAsync();
                     FeatureLayer featureLayer = new FeatureLayer(geodatabaseFeatureTable);
 
+                    GeodatabaseFeatureTable geodatabaseFeatureTable1 = geodatabase.getGeodatabaseFeatureTableByServiceLayerId(1);
+                    geodatabaseFeatureTable1.loadAsync();
+                    FeatureLayer featureLayer1 = new FeatureLayer(geodatabaseFeatureTable1);
+
                     featureLayer.addDoneLoadingListener(new Runnable() {
                         @Override
                         public void run() {
                             if (featureLayer.getLoadStatus()==LoadStatus.LOADED){
                                 featureLayer.setRenderer(new SimpleRenderer(new SimpleFillSymbol(SimpleFillSymbol.Style.SOLID, Color.RED, null)));
                                 mMapView.setViewpointAsync(new Viewpoint(featureLayer.getFullExtent()));
-                                QueryParameters queryParameters  = new QueryParameters();
-                                featurelayerquery(featureLayer,queryParameters, FeatureLayer.SelectionMode.ADD);
-                                statisticbypolygon(featureLayer);
+                                //QueryParameters queryParameters  = new QueryParameters();
+                                //featurelayerquery(featureLayer,queryParameters, FeatureLayer.SelectionMode.ADD);
+                                //statisticbypolygon(featureLayer);
+
+                            }else{
+                                Log.e(TAG, "Feature Layer failed to load!");
+                            }
+
+                        }
+                    });
+
+                    featureLayer1.addDoneLoadingListener(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (featureLayer1.getLoadStatus()==LoadStatus.LOADED){
+                                featureLayer1.setRenderer(new SimpleRenderer(new SimpleFillSymbol(SimpleFillSymbol.Style.SOLID, Color.BLUE, null)));
+                                //mMapView.setViewpointAsync(new Viewpoint(featureLayer.getFullExtent()));
+                                //QueryParameters queryParameters  = new QueryParameters();
+                               // featurelayerquery(featureLayer,queryParameters, FeatureLayer.SelectionMode.SUBTRACT);
+                                //statisticbypolygon(featureLayer);
                             }else{
                                 Log.e(TAG, "Feature Layer failed to load!");
                             }
@@ -102,6 +148,22 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
                     mMapView.getMap().getOperationalLayers().add(featureLayer);
+                    mMapView.getMap().getOperationalLayers().add(featureLayer1);
+                    mArcGISMap.getOperationalLayers().remove(1);
+                   // System.out.println("layerlist size :"+mArcGISMap.getOperationalLayers().size());
+                    List layerList = mArcGISMap.getOperationalLayers().subList(0,2);
+                    //System.out.println("layerlist object0 class: "+layerList.get(0)+"layerlist object1 class: "+layerList.get(1));
+
+                    mArcGISMap.addLoadStatusChangedListener(new LoadStatusChangedListener() {
+                        @Override
+                        public void loadStatusChanged(LoadStatusChangedEvent loadStatusChangedEvent) {
+                            System.out.println("going to change list");
+                            System.out.println("newloadstatus"+loadStatusChangedEvent.getNewLoadStatus());
+
+                        }
+                    });
+
+
                 }
             }
         });
@@ -109,6 +171,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
 
     //this method takes a feature layer in and query on it
     public void featurelayerquery(FeatureLayer featureLayer, QueryParameters queryParameters, FeatureLayer.SelectionMode mode){

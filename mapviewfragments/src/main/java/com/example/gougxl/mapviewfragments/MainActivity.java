@@ -13,6 +13,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main_relative);
 
 
+
         FragmentManager fm=getSupportFragmentManager();
         Fragment fragmentleft = fm.findFragmentById(R.id.fragment_container_left);
         Fragment fragmentright= fm.findFragmentById(R.id.fragment_container_right);

@@ -1,1 +1,1 @@
-include ':featurelayer_offlinegeodatabase', ':mapviewzoom', ':mapviewzoomwithslider'
+include ':featurelayer_offlinegeodatabase', ':mapviewzoom', ':mapviewzoomwithslider', ':mapviewfragments', ':mapview_zoom_faster', ':changesublayeropacity', ':addscenelayer', ':tdt_wmtslayer'

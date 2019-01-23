@@ -8,7 +8,7 @@ import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.view.MapView;
 
 public class MainActivity extends AppCompatActivity {
-    listener mListener;
+    customerizeddoubletaplistener mCustomerizeddoubletaplistener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
         MapView mapView=findViewById(R.id.mapView);
         ArcGISMap arcGISMap=new ArcGISMap(Basemap.createOpenStreetMap());
         mapView.setMap(arcGISMap);
-        mapView.setOnTouchListener(new listener(MainActivity.this,mapView));
+        mapView.setOnTouchListener(new customerizeddoubletaplistener(MainActivity.this,mapView));
 
     }
 

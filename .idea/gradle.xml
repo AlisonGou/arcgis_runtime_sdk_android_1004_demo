@@ -8,9 +8,14 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/addscenelayer" />
+            <option value="$PROJECT_DIR$/changesublayeropacity" />
             <option value="$PROJECT_DIR$/featurelayer_offlinegeodatabase" />
+            <option value="$PROJECT_DIR$/mapview_zoom_faster" />
+            <option value="$PROJECT_DIR$/mapviewfragments" />
             <option value="$PROJECT_DIR$/mapviewzoom" />
             <option value="$PROJECT_DIR$/mapviewzoomwithslider" />
+            <option value="$PROJECT_DIR$/tdt_wmtslayer" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
