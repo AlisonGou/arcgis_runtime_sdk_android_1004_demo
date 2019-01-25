@@ -10,6 +10,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/addscenelayer" />
             <option value="$PROJECT_DIR$/changesublayeropacity" />
+            <option value="$PROJECT_DIR$/editshapefile" />
             <option value="$PROJECT_DIR$/featurelayer_offlinegeodatabase" />
             <option value="$PROJECT_DIR$/mapview_zoom_faster" />
             <option value="$PROJECT_DIR$/mapviewfragments" />

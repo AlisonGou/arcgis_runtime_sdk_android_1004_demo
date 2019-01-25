@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">editshapefile</string>
+    <string name="read_permission_denied">read_permission_denied</string>
+</resources>
